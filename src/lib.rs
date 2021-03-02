@@ -204,8 +204,6 @@ impl<Alphabet: Clone> From<TuringTape<Alphabet>> for Vec<Alphabet> {
 pub enum Move {
     /// Move left one cell
     Left,
-    /// Dont move
-    Stay,
     /// Move right one cell
     Right,
 }
@@ -213,21 +211,34 @@ pub enum Move {
 /// A trait that implements the behaviour for turing states
 pub trait TuringStates<Alphabet: Clone>: Sized + PartialEq {
     /// The internal step function
-    fn int_step(&mut self, current_token: Alphabet) -> (Option<Alphabet>, Move);
+    /// Output the new state, token at current cursor position, and move of the cursor position
+    fn int_step(&self, current_token: Alphabet) -> (Option<Self>, Option<Alphabet>, Option<Move>);
 
     /// Execute one step of the turing machine
     fn step(&mut self, tape: &TuringTape<Alphabet>) {
-        let (opt_replace, mv) = self.int_step(tape.get_cursor());
+        let (opt_state, opt_replace, opt_move) = self.int_step(tape.get_cursor());
 
+        // Update the current state
+        if let Some(state) = opt_state {
+            *self = state;
+        }
+
+        // Update cursor token
         if let Some(replace) = opt_replace {
             tape.set_cursor(replace);
         }
 
-        match mv {
-            Move::Left => { tape.step_left(); },
-            Move::Stay => {},
-            Move::Right => { tape.step_right(); },
-        };
+        // Update cursor position
+        if let Some(mv) = opt_move {
+            match mv {
+                Move::Left => {
+                    tape.step_left();
+                }
+                Move::Right => {
+                    tape.step_right();
+                }
+            };
+        }
     }
 
     /// Run this turing machine from a start state, until it eaches a final state.
