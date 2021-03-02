@@ -146,7 +146,7 @@ impl<Alphabet: Clone> TuringTape<Alphabet> {
 
     /// Make the cursor go one cell to the left
     ///
-    /// Will panic if one goes of the tape.
+    /// Will panic if one goes off the tape.
     pub fn step_left(&self) -> Alphabet {
         let new_cursor = match self.cursor.borrow().clone().prev() {
             Some(prev) => prev.clone(),
