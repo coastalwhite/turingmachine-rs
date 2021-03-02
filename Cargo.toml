@@ -1,0 +1,14 @@
+[package]
+name = "turingmachine-rs"
+version = "0.1.0"
+authors = ["Gijs Burghoorn <me@gburghoorn.com>"]
+edition = "2018"
+description = "A Turing Machine Simulation Library written in Rust"
+documentation = "https://docs.rs/turingmachine-rs"
+readme = "README.md"
+homepage = "https://github.com/coastalwhite/turingmachine-rs"
+repository = "https://github.com/coastalwhite/turingmachine-rs"
+license = "MIT"
+license-file = "LICENSE.md"
+keywords = ["simulation", "turing", "tape", "machine"]
+categories = ["simulation", "science"]
