@@ -9,6 +9,6 @@ readme = "README.md"
 homepage = "https://github.com/coastalwhite/turingmachine-rs"
 repository = "https://github.com/coastalwhite/turingmachine-rs"
 license = "MIT"
-license-file = "LICENSE.md"
+license-file = "LICENSE"
 keywords = ["simulation", "turing", "tape", "machine"]
 categories = ["simulation", "science"]
