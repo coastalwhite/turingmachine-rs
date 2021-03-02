@@ -1,6 +1,6 @@
 [package]
 name = "turingmachine-rs"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Gijs Burghoorn <me@gburghoorn.com>"]
 edition = "2018"
 description = "A Turing Machine Simulation Library written in Rust"

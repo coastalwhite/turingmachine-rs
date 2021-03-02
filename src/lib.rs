@@ -172,6 +172,23 @@ impl<Alphabet: Clone> TuringTape<Alphabet> {
     }
 }
 
+impl<Alphabet: Clone + fmt::Display> TuringTape<Alphabet> {
+    /// Runs from start state until one of the end states has been reached.
+    /// Will return the end state.
+    pub fn debug_run_states<S: TuringStates<Alphabet> + PartialEq + fmt::Debug>(
+        &self,
+        mut start_state: S,
+        end_states: Vec<S>,
+    ) -> S {
+        while !end_states.contains(&start_state) {
+            start_state.internal_step(self);
+            println!("{}      :      {:?}", self, start_state);
+        }
+
+        start_state
+    }
+}
+
 impl<Alphabet: Clone> From<TuringTape<Alphabet>> for Vec<Alphabet> {
     fn from(tape: TuringTape<Alphabet>) -> Vec<Alphabet> {
         let cursor_initial = tape.cursor.borrow().clone();
