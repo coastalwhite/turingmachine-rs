@@ -12,7 +12,7 @@ enum Alphabet {
 }
 
 /// All the different states
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone, Copy)]
 enum States {
     Start,
     FoundNone,
@@ -25,41 +25,31 @@ enum States {
 
 /// The implementation for the states
 impl TuringStates<Alphabet> for States {
-    fn int_step(&mut self, cursor_token: Alphabet) -> (Option<Alphabet>, Move) {
+    fn step(&self, t: Alphabet) -> (Self, Alphabet, Move) {
         use Alphabet::*;
         use States::*;
 
         match self {
-            Start => {
-                *self = FoundNone;
-                (None, Move::Right)
-            },
+            Start => (FoundNone, t, Move::Right),
 
             InvalidEnd => panic!("ValidEnd should be including in the end states and shouldn't be the initial state."),
 
             _ => {
-                match cursor_token {
-                    Zero => (None, Move::Right),
+                match t {
+                    Zero => (*self, t, Move::Right),
 
-                    One => {
-                        *self = match self {
-                            FoundNone => FoundFirst,
-                            FoundFirst => FoundSecond,
-                            FoundSecond => FoundMore,
-                            FoundMore => FoundMore,
-                            _ => panic!("Unreachable"),
-                        };
+                    One => (match self {
+                        FoundNone => FoundFirst,
+                        FoundFirst => FoundSecond,
+                        FoundSecond => FoundMore,
+                        FoundMore => FoundMore,
+                        _ => panic!("Unreachable"),
+                    }, t, Move::Right),
 
-                        (None, Move::Right)
-                    },
-
-                    Delta => {
-                        *self = match self {
-                            FoundSecond => ValidEnd,
-                            _ => InvalidEnd,
-                        };
-                        (None, Move::Stay)
-                    }
+                    Delta => (match self {
+                        FoundSecond => ValidEnd,
+                        _ => InvalidEnd,
+                    }, t, Move::Stay)
                 }
             },
         }

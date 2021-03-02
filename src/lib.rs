@@ -165,7 +165,7 @@ impl<Alphabet: Clone> TuringTape<Alphabet> {
         end_states: Vec<S>,
     ) -> S {
         while !end_states.contains(&start_state) {
-            start_state.step(self);
+            start_state.internal_step(self);
         }
 
         start_state
@@ -204,6 +204,8 @@ impl<Alphabet: Clone> From<TuringTape<Alphabet>> for Vec<Alphabet> {
 pub enum Move {
     /// Move left one cell
     Left,
+    /// Dont move the cursor
+    Stay,
     /// Move right one cell
     Right,
 }
@@ -212,33 +214,28 @@ pub enum Move {
 pub trait TuringStates<Alphabet: Clone>: Sized + PartialEq {
     /// The internal step function
     /// Output the new state, token at current cursor position, and move of the cursor position
-    fn int_step(&self, current_token: Alphabet) -> (Option<Self>, Option<Alphabet>, Option<Move>);
+    fn step(&self, current_token: Alphabet) -> (Self, Alphabet, Move);
 
     /// Execute one step of the turing machine
-    fn step(&mut self, tape: &TuringTape<Alphabet>) {
-        let (opt_state, opt_replace, opt_move) = self.int_step(tape.get_cursor());
+    fn internal_step(&mut self, tape: &TuringTape<Alphabet>) {
+        let (state, replace, mv) = self.step(tape.get_cursor());
 
         // Update the current state
-        if let Some(state) = opt_state {
-            *self = state;
-        }
+        *self = state;
 
         // Update cursor token
-        if let Some(replace) = opt_replace {
-            tape.set_cursor(replace);
-        }
+        tape.set_cursor(replace);
 
         // Update cursor position
-        if let Some(mv) = opt_move {
-            match mv {
-                Move::Left => {
-                    tape.step_left();
-                }
-                Move::Right => {
-                    tape.step_right();
-                }
-            };
-        }
+        match mv {
+            Move::Left => {
+                tape.step_left();
+            }
+            Move::Stay => {}
+            Move::Right => {
+                tape.step_right();
+            }
+        };
     }
 
     /// Run this turing machine from a start state, until it eaches a final state.

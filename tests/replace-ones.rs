@@ -21,26 +21,19 @@ enum States {
 
 /// The implementation for the states
 impl TuringStates<Alphabet> for States {
-    fn int_step(&mut self, cursor_token: Alphabet) -> (Option<Alphabet>, Move) {
+    fn step(&self, t: Alphabet) -> (Self, Alphabet, Move) {
         use Alphabet::*;
         use States::*;
 
         match self {
-            Start => {
-                *self = Started;
-                (None, Move::Right)
-            },
-
+            Start => (Started, t, Move::Right),
             ValidEnd => panic!("ValidEnd should be including in the end states and shouldn't be the initial state."),
 
             Started => {
-                match cursor_token {
-                    Zero => (None, Move::Right),
-                    One => (Some(Zero), Move::Right),
-                    Delta => {
-                        *self = ValidEnd;
-                        (None, Move::Stay)
-                    }
+                match t {
+                    Zero => (Started, t, Move::Right),
+                    One => (Started, Zero, Move::Right),
+                    Delta => (ValidEnd, t, Move::Stay)
                 }
             },
         }
